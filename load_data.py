@@ -35,7 +35,7 @@ except mysql.connector.Error as err:
     print(f"❌ MySQL Error: {err}")
     exit(1)
 
-# Process only ONE test file (testing)
+# Process only ONE test file (for now)
 parquet_files = glob.glob(os.path.join(PARQUET_DIR, 'yellow_tripdata_2024-01.parquet'))
 
 print(f"🔍 Found {len(parquet_files)} parquet file(s).")
@@ -49,14 +49,11 @@ for parquet_file in parquet_files:
     # Force columns to lowercase
     df.columns = df.columns.str.lower()
 
-    # Print for debug
-    # print("Columns in DataFrame:", df.columns.tolist())
+    # Convert datetime columns safely
+    df['tpep_pickup_datetime'] = pd.to_datetime(df['tpep_pickup_datetime'], errors='coerce').dt.strftime('%Y-%m-%d %H:%M:%S')
+    df['tpep_dropoff_datetime'] = pd.to_datetime(df['tpep_dropoff_datetime'], errors='coerce').dt.strftime('%Y-%m-%d %H:%M:%S')
 
-    # Convert Timestamp columns
-    df['tpep_pickup_datetime'] = pd.to_datetime(df['tpep_pickup_datetime']).dt.strftime('%Y-%m-%d %H:%M:%S')
-    df['tpep_dropoff_datetime'] = pd.to_datetime(df['tpep_dropoff_datetime']).dt.strftime('%Y-%m-%d %H:%M:%S')
-
-    # Define columns to insert
+    # Columns to insert (must match table schema exactly)
     columns_to_insert = [
         'vendorid', 'tpep_pickup_datetime', 'tpep_dropoff_datetime', 'passenger_count',
         'trip_distance', 'ratecodeid', 'store_and_fwd_flag', 'pulocationid', 'dolocationid',
@@ -64,23 +61,23 @@ for parquet_file in parquet_files:
         'improvement_surcharge', 'total_amount', 'congestion_surcharge'
     ]
 
-    # Prepare values
-    values = df[columns_to_insert].values.tolist()
+    # Handle NaN → None
+    df[columns_to_insert] = df[columns_to_insert].where(pd.notnull(df[columns_to_insert]), None)
 
+    # Fill store_and_fwd_flag safely (some rows may be missing)
+    df['store_and_fwd_flag'] = df['store_and_fwd_flag'].fillna('N')
 
-    df.columns = [col.lower() for col in df.columns]
-
-    # Convert Timestamp columns to string for MySQL
-    df['tpep_pickup_datetime'] = pd.to_datetime(df['tpep_pickup_datetime']).dt.strftime('%Y-%m-%d %H:%M:%S')
-    df['tpep_dropoff_datetime'] = pd.to_datetime(df['tpep_dropoff_datetime']).dt.strftime('%Y-%m-%d %H:%M:%S')
-
-
-    # Save to CSV (optional, for inspection)
+    # Save CSV (optional)
     csv_filename = os.path.join(CSV_DIR, os.path.basename(parquet_file).replace('.parquet', '.csv'))
     df.to_csv(csv_filename, index=False)
     print(f"💾 Saved CSV to {csv_filename}.")
 
-    # Prepare data for insertion
+    # Prepare values
+    values = df[columns_to_insert].copy().values.tolist()
+
+    print(f"Number of records to insert: {len(values)}")
+
+    # Prepare insert query
     insert_query = f"""
     INSERT INTO {TABLE_NAME} (
         vendor_id, tpep_pickup_datetime, tpep_dropoff_datetime, passenger_count,
@@ -90,33 +87,18 @@ for parquet_file in parquet_files:
     ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
 
-    values = df[[
-        'vendorid', 'tpep_pickup_datetime', 'tpep_dropoff_datetime', 'passenger_count',
-        'trip_distance', 'ratecodeid', 'store_and_fwd_flag', 'pulocationid', 'dolocationid',
-        'payment_type', 'fare_amount', 'extra', 'mta_tax', 'tip_amount', 'tolls_amount',
-        'improvement_surcharge', 'total_amount', 'congestion_surcharge'
-    ]].values.tolist()
-
-    # print(f"Preparing to insert {len(values[0])} columns, expected {len(columns_to_insert)} columns.")
-    for i, row in enumerate(values):
+    # Batch insert
+    batch_size = 1000
+    for i in range(0, len(values), batch_size):
+        batch = values[i:i+batch_size]
         try:
-            cursor.execute(insert_query, row)
+            cursor.executemany(insert_query, batch)
             cnx.commit()
-            print(f"✅ Inserted row {i}")
+            print(f"✅ Inserted batch {i} to {i+len(batch)-1}")
         except Exception as e:
-            print(f"❌ Error inserting row {i}: {e}")
-            print("Row content:", row)
-            break
+            print(f"❌ Error inserting batch {i} to {i+len(batch)-1}: {e}")
+            cnx.rollback()
 
-'''
-    try:
-        cursor.executemany(insert_query, values)
-        cnx.commit()
-        print(f"✅ Loaded data from {csv_filename} into MySQL.")
-    except Exception as e:
-        print(f"❌ Error inserting data from {csv_filename}: {e}")
-        cnx.rollback()
-'''
 # Cleanup
 cursor.close()
 cnx.close()
