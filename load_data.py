@@ -4,6 +4,16 @@ import pandas as pd
 import mysql.connector
 from mysql.connector import errorcode
 from dotenv import load_dotenv, find_dotenv
+import argparse
+
+# Argument parsing
+parser = argparse.ArgumentParser(description='NYC Taxi Data Loader')
+parser.add_argument('--insert-method', choices=['executemany', 'infile'], default='executemany',
+                    help='Choose insert method: executemany (default) or infile (prints LOAD DATA INFILE command)')
+args = parser.parse_args()
+
+insert_method = args.insert_method
+print(f"👉 Using insert method: {insert_method}")
 
 # Load environment variables
 load_dotenv(find_dotenv())
@@ -71,6 +81,19 @@ for parquet_file in parquet_files:
     csv_filename = os.path.join(CSV_DIR, os.path.basename(parquet_file).replace('.parquet', '.csv'))
     df.to_csv(csv_filename, index=False)
     print(f"💾 Saved CSV to {csv_filename}.")
+
+    if insert_method == 'infile':
+        print("\n🚀 To load this CSV via LOAD DATA INFILE, run the following command in MySQL:")
+        print(f"LOAD DATA LOCAL INFILE '{os.path.abspath(csv_filename)}'")
+        print("INTO TABLE yellow_taxi_trips")
+        print("FIELDS TERMINATED BY ',' ENCLOSED BY '\"'")
+        print("LINES TERMINATED BY '\\n'")
+        print("IGNORE 1 ROWS;")
+        print("\n🎉 Done.")
+        # Exit early → skip executemany insert
+        cursor.close()
+        cnx.close()
+        exit(0)
 
     # Prepare values
     values = df[columns_to_insert].copy().values.tolist()
