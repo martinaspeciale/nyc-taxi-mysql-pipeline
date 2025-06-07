@@ -45,10 +45,12 @@ except mysql.connector.Error as err:
     print(f"❌ MySQL Error: {err}")
     exit(1)
 
-# Process only ONE test file (for now)
-parquet_files = glob.glob(os.path.join(PARQUET_DIR, 'yellow_tripdata_2024-01.parquet'))
+# Process parquet files
+parquet_files = glob.glob(os.path.join(PARQUET_DIR, 'yellow_tripdata_2024-*.parquet'))
 
 print(f"🔍 Found {len(parquet_files)} parquet file(s).")
+
+infile_commands = []
 
 for parquet_file in parquet_files:
     print(f"📄 Processing {parquet_file}...")
@@ -83,17 +85,14 @@ for parquet_file in parquet_files:
     print(f"💾 Saved CSV to {csv_filename}.")
 
     if insert_method == 'infile':
-        print("\n🚀 To load this CSV via LOAD DATA INFILE, run the following command in MySQL:")
-        print(f"LOAD DATA LOCAL INFILE '{os.path.abspath(csv_filename)}'")
-        print("INTO TABLE yellow_taxi_trips")
-        print("FIELDS TERMINATED BY ',' ENCLOSED BY '\"'")
-        print("LINES TERMINATED BY '\\n'")
-        print("IGNORE 1 ROWS;")
-        print("\n🎉 Done.")
-        # Exit early → skip executemany insert
-        cursor.close()
-        cnx.close()
-        exit(0)
+        infile_commands.append(f"""
+            LOAD DATA LOCAL INFILE '{os.path.abspath(csv_filename)}'
+            INTO TABLE yellow_taxi_trips
+            FIELDS TERMINATED BY ',' ENCLOSED BY '"'
+            LINES TERMINATED BY '\\n'
+            IGNORE 1 ROWS;
+            """)
+        continue
 
     # Prepare values
     values = df[columns_to_insert].copy().values.tolist()
@@ -121,6 +120,11 @@ for parquet_file in parquet_files:
         except Exception as e:
             print(f"❌ Error inserting batch {i} to {i+len(batch)-1}: {e}")
             cnx.rollback()
+
+if insert_method == 'infile':
+    print("\n🚀 All LOAD DATA INFILE commands:")
+    for cmd in infile_commands:
+        print(cmd)
 
 # Cleanup
 cursor.close()
