@@ -1,0 +1,20 @@
+CREATE TABLE yellow_taxi_trips (
+    vendor_id VARCHAR(10),
+    tpep_pickup_datetime DATETIME,
+    tpep_dropoff_datetime DATETIME,
+    passenger_count INT,
+    trip_distance FLOAT,
+    rate_code_id INT,
+    store_and_fwd_flag CHAR(1),
+    pu_location_id INT,
+    do_location_id INT,
+    payment_type INT,
+    fare_amount FLOAT,
+    extra FLOAT,
+    mta_tax FLOAT,
+    tip_amount FLOAT,
+    tolls_amount FLOAT,
+    improvement_surcharge FLOAT,
+    total_amount FLOAT,
+    congestion_surcharge FLOAT
+);
