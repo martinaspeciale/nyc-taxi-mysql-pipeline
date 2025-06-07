@@ -65,7 +65,7 @@ You must:
 SET GLOBAL local_infile = 1;
 SHOW VARIABLES LIKE 'local_infile';
 ```
-- Expected result:
+Expected result:
 ```
 local_infile ON
 ```
@@ -74,7 +74,7 @@ local_infile ON
 mysql --local-infile=1 -u martina -p -h 127.0.0.1 nyc_taxi
 ```
 - Step 3: Run the printed `LOAD DATA INFILE` commands inside this client session.
-- If you skip these steps, you will see this error:
+If you skip these steps, you will see this error:
 ```
 ERROR 3948 (42000): Loading local data is disabled; this must be enabled on both the client and server sides
 ```
@@ -97,3 +97,36 @@ SELECT COUNT(*) FROM yellow_taxi_trips;
 - Use `TRUNCATE TABLE` before full reloads to avoid duplicate data
 - Monitor CSV sizes and row counts to ensure complete processing
 - Keep `.env` and `.gitignore` configured to avoid leaking sensitive data
+
+## Next Steps Roadmap
+
+The pipeline currently supports full ETL of the NYC Yellow Taxi data into MySQL.
+
+Planned next steps:
+
+- [ ] 1️⃣ Exploratory data analysis (EDA)
+    - Total trips per month
+    - Average fare and tip analysis
+    - Payment types trends
+
+- [ ] 2️⃣ Geospatial analysis 🌍
+    - Top pickup and dropoff locations
+    - Visualize trip density on a map
+    - Temporal trends in pickup locations
+
+- [ ] 3️⃣ Time series analysis
+    - Hourly / daily activity patterns
+    - Trends in trip distances and fares
+
+- [ ] 4️⃣ Fares and tips deep dive
+    - Average tip by payment type
+    - Correlation between trip distance and tips
+
+- [ ] 5️⃣ Outlier and data quality analysis
+    - Detect anomalous trips (zero distance with high fare, extreme durations)
+
+- [ ] 6️⃣ Build a small interactive dashboard 
+    - Streamlit app or Jupyter notebook with charts and maps
+
+
+
