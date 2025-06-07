@@ -5,6 +5,8 @@ import mysql.connector
 from mysql.connector import errorcode
 from dotenv import load_dotenv
 
+load_dotenv()
+
 # Config
 PARQUET_DIR = './data/'
 CSV_DIR = './converted_csv/'
