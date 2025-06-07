@@ -98,6 +98,21 @@ SELECT COUNT(*) FROM yellow_taxi_trips;
 - Monitor CSV sizes and row counts to ensure complete processing
 - Keep `.env` and `.gitignore` configured to avoid leaking sensitive data
 
+## Current Dataset Status
+
+As of June 7, 2025:
+
+- Dataset loaded: NYC Yellow Taxi Trip Data (January 2024 → December 2024)
+- Total records in `yellow_taxi_trips` table: **41,169,720**
+- Full 12-month dataset processed via ETL pipeline:
+    - Parquet → CSV → MySQL (LOAD DATA INFILE)
+    - Batch processing verified
+    - Load time ~2h total for full dataset
+- Pipeline run manually using:
+    - `python3 load_data.py --insert-method infile`
+    - `LOAD DATA LOCAL INFILE` commands as printed by pipeline
+
+
 ## Next Steps Roadmap
 
 The pipeline currently supports full ETL of the NYC Yellow Taxi data into MySQL.
