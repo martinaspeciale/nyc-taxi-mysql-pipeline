@@ -1,3 +1,6 @@
 # Ignore data folder contents
 /data/*
 !/data/.gitkeep
+
+# MySQL config parameters
+.env
