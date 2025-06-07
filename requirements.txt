@@ -1,3 +1,5 @@
-pandas 
-pyarrow 
-mysql-connector-python
+pandas>=2.0
+pyarrow>=15.0
+mysql-connector-python>=8.0
+tqdm>=4.0
+python-dotenv>=1.0
