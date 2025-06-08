@@ -13,13 +13,17 @@ An ETL pipeline to load NYC Yellow Taxi Trip data into a MySQL database for quer
 
 ## Project Structure
 
-- `data/` → Raw Parquet files
-- `converted_csv/` → CSV converted files
-- `create_table.sql` → MySQL schema definition
-- `load_data.py` → ETL script to convert + load data
-- `README.md` → Project documentation
-- `requirements.txt` → Project requirements
-
+- `data/` → Raw Parquet files + Taxi Zones shapefile (data/taxi_zones/)
+- `converted_csv/` → CSV converted files used for MySQL loading
+- `create_table.sql` → MySQL schema definition for `yellow_taxi_trips` table
+- `load_data.py` → ETL script to convert Parquet to CSV and load data into MySQL
+- `load_csv_infile.py` → Utility script to generate LOAD DATA INFILE statements for manual execution
+- `notebooks/` → Exploratory notebooks:
+    - `geospatial_analysis.ipynb` → Geospatial analysis of pickup zones
+    - `eda_yellow_taxi.ipynb` → Exploratory Data Analysis (EDA): trips per month, fare/tip trends, payment types
+    - `README.md` → Notebooks documentation + schema reference
+- `README.md` → Main project documentation (this file)
+- `requirements.txt` → Python project requirements
 
 ## Usage and Notes
 
@@ -57,9 +61,9 @@ FIELDS TERMINATED BY ',' ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;
 ```
-Enabling `LOCAL INFILE`, which by default is disabled in MySQL for security reasons.
+## # Enabling `LOCAL INFILE`
+`LOCAL INFILE` is by default disabled in MySQL for security reasons. Here are the steps to enable it:
 
-You must:
 - Step 1: Enable it on the server:
 ```
 SET GLOBAL local_infile = 1;
@@ -71,7 +75,7 @@ local_infile ON
 ```
 - Step 2: Start the MySQL client with `LOCAL INFILE` enabled:
 ```
-mysql --local-infile=1 -u martina -p -h 127.0.0.1 nyc_taxi
+mysql --local-infile=1 -u <user> -p -h 127.0.0.1 nyc_taxi
 ```
 - Step 3: Run the printed `LOAD DATA INFILE` commands inside this client session.
 If you skip these steps, you will see this error:
@@ -101,7 +105,6 @@ SELECT COUNT(*) FROM yellow_taxi_trips;
 ## Current Dataset Status
 
 As of June 7, 2025:
-
 - Dataset loaded: NYC Yellow Taxi Trip Data (January 2024 → December 2024)
 - Total records in `yellow_taxi_trips` table: **41,169,720**
 - Full 12-month dataset processed via ETL pipeline:
@@ -112,6 +115,17 @@ As of June 7, 2025:
     - `python3 load_data.py --insert-method infile`
     - `LOAD DATA LOCAL INFILE` commands as printed by pipeline
 
+### Total records in MySQL after load:
+
+`SELECT COUNT(*) FROM yellow_taxi_trips;`
+
+→ 41,169,720 rows
+
+### Load method:
+
+- `python3 load_data.py --insert-method infile`
+- Manual execution of `LOAD DATA LOCAL INFILE` commands as printed
+- Table truncated prior to full load
 
 ## Next Steps Roadmap
 
