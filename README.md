@@ -1,6 +1,8 @@
 # NYC Taxi MySQL Pipeline
 
-An ETL pipeline to load NYC Yellow Taxi Trip data into a MySQL database for querying and analysis.
+An ETL + EDA pipeline for NYC Yellow Taxi Trip Data 2024, with interactive Streamlit dashboard.
+
+🚀 **Interactive Dashboard available** — see [Dashboard Usage](#dashboard-usage) below to run it locally.
 
 🚕 Data Source: [NYC TLC Trip Records](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page)
 
@@ -22,8 +24,12 @@ An ETL pipeline to load NYC Yellow Taxi Trip data into a MySQL database for quer
     - `geospatial_analysis.ipynb` → Geospatial analysis of pickup zones
     - `eda_yellow_taxi.ipynb` → Exploratory Data Analysis (EDA): trips per month, fare/tip trends, payment types
     - `README.md` → Notebooks documentation + schema reference
+- `eda_results/` → CSV files with EDA query results (used for dashboards and further analysis)
+- `dashboard/` → Streamlit dashboard application:
+    - `app.py` → Main dashboard app
 - `README.md` → Main project documentation (this file)
 - `requirements.txt` → Python project requirements
+
 
 ## Usage and Notes
 
@@ -126,6 +132,27 @@ As of June 7, 2025:
 - `python3 load_data.py --insert-method infile`
 - Manual execution of `LOAD DATA LOCAL INFILE` commands as printed
 - Table truncated prior to full load
+
+## Dashboard Usage
+
+The project includes an interactive Streamlit dashboard that visualizes key EDA results.
+
+### How to run the dashboard locally
+
+1. Install project requirements:
+```bash
+pip install -r requirements.txt
+```
+2. Run the dashboard:
+```bash
+cd dashboard
+streamlit run app.py
+```
+3. The dashboard will launch in your browser
+
+### Notes
+- The dashboard loads precomputed EDA results from ../eda_results/.
+- To update the dashboard views, rerun the relevant EDA notebook cells to regenerate the CSV files.
 
 ## Next Steps Roadmap
 

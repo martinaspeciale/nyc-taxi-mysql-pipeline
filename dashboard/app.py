@@ -5,6 +5,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
+
 # App title
 st.title("NYC Yellow Taxi Dashboard - 2024")
 
@@ -22,6 +23,7 @@ ax1.set_xlabel('Month')
 ax1.set_ylabel('Total Trips')
 ax1.grid(True)
 plt.xticks(rotation=45)
+plt.ylim(bottom=0)
 st.pyplot(fig1)
 
 # Section 2: Average Fare and Tip per Month
@@ -49,4 +51,4 @@ st.pyplot(fig3)
 
 # Footer
 st.markdown("---")
-st.markdown("Data source: NYC Yellow Taxi Trip Data 2024")
+st.markdown("Data source: [NYC Yellow Taxi Trip Data 2024](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page) | Project by [martinaspeciale](https://github.com/martinaspeciale)")
