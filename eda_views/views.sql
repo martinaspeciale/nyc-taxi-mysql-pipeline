@@ -97,3 +97,19 @@ GROUP BY
     pickup_hour
 ORDER BY
     pickup_hour;
+
+-- 8️⃣ Pickups per week and location
+CREATE OR REPLACE VIEW pickups_per_week_location AS
+SELECT
+    YEAR(tpep_pickup_datetime) AS pickup_year,
+    WEEK(tpep_pickup_datetime, 3) AS pickup_week, -- mode 3 = ISO week (1-53), compatible with Tableau
+    pu_location_id,
+    COUNT(*) AS total_pickups,
+    SUM(total_amount) AS total_revenue,
+    AVG(total_amount) AS avg_fare
+FROM
+    yellow_taxi_trips
+GROUP BY
+    pickup_year, pickup_week, pu_location_id
+ORDER BY
+    pickup_year, pickup_week, pu_location_id;
