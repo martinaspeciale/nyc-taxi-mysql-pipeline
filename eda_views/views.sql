@@ -171,3 +171,65 @@ FROM yellow_taxi_trips
 WHERE trip_distance > 0 AND total_amount > 0
 GROUP BY distance_bucket
 ORDER BY FIELD(distance_bucket, '<1 mile', '1-2 miles', '2-5 miles', '5-10 miles', '10-20 miles', '20+ miles');
+
+-- 1️⃣3️⃣ Revenue per pickup hour → dropoff hour matrix
+CREATE OR REPLACE VIEW revenue_pickup_dropoff_hour_matrix AS
+SELECT
+    HOUR(tpep_pickup_datetime) AS pickup_hour,
+    HOUR(tpep_dropoff_datetime) AS dropoff_hour,
+    COUNT(*) AS total_rides,
+    SUM(total_amount) AS total_revenue,
+    AVG(total_amount) AS avg_fare
+FROM yellow_taxi_trips
+GROUP BY pickup_hour, dropoff_hour
+ORDER BY pickup_hour, dropoff_hour;
+
+-- 1️⃣4️⃣ Trips with highest tip % → top 1% percentile
+CREATE OR REPLACE VIEW top_tipping_trips AS
+SELECT
+    tpep_pickup_datetime,
+    pu_location_id,
+    do_location_id,
+    passenger_count,
+    trip_distance,
+    total_amount,
+    tip_amount,
+    (tip_amount / total_amount) * 100 AS tip_percentage
+FROM yellow_taxi_trips
+WHERE total_amount > 0 AND tip_amount > 0
+ORDER BY tip_percentage DESC
+LIMIT 1000;  -- top 1000 highest tip % trips
+
+-- 1️⃣5️⃣ Passenger count X trip distance → behavior grid
+CREATE OR REPLACE VIEW passenger_count_trip_distance_grid AS
+SELECT
+    passenger_count,
+    CASE
+        WHEN trip_distance < 1 THEN '<1 mile'
+        WHEN trip_distance < 2 THEN '1-2 miles'
+        WHEN trip_distance < 5 THEN '2-5 miles'
+        WHEN trip_distance < 10 THEN '5-10 miles'
+        WHEN trip_distance < 20 THEN '10-20 miles'
+        ELSE '20+ miles'
+    END AS distance_bucket,
+    COUNT(*) AS total_rides,
+    AVG(total_amount) AS avg_fare
+FROM yellow_taxi_trips
+WHERE trip_distance > 0
+GROUP BY passenger_count, distance_bucket
+ORDER BY passenger_count, distance_bucket;
+
+
+-- 1️⃣6️⃣ Night vs. day rides revenue contribution
+CREATE OR REPLACE VIEW rides_day_night_split AS
+SELECT
+    CASE
+        WHEN HOUR(tpep_pickup_datetime) BETWEEN 6 AND 19 THEN 'Day'
+        ELSE 'Night'
+    END AS day_night,
+    COUNT(*) AS total_rides,
+    SUM(total_amount) AS total_revenue,
+    AVG(total_amount) AS avg_fare
+FROM yellow_taxi_trips
+GROUP BY day_night
+ORDER BY day_night;
