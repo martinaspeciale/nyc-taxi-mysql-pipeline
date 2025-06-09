@@ -4,3 +4,4 @@ mysql-connector-python>=8.0
 tqdm>=4.0
 python-dotenv>=1.0
 streamlit
+sqlalchemy
