@@ -113,3 +113,61 @@ GROUP BY
     pickup_year, pickup_week, pu_location_id
 ORDER BY
     pickup_year, pickup_week, pu_location_id;
+
+-- 9️⃣ Rides per week + passenger count → per Race Bar Chart animato → "How NYC moves by passenger count over time"
+CREATE OR REPLACE VIEW rides_per_week_passenger_count AS
+SELECT
+    YEAR(tpep_pickup_datetime) AS pickup_year,
+    WEEK(tpep_pickup_datetime, 3) AS pickup_week,
+    CONCAT(YEAR(tpep_pickup_datetime), '-W', LPAD(WEEK(tpep_pickup_datetime, 3), 2, '0')) AS pickup_yearweek,
+    passenger_count,
+    COUNT(*) AS total_rides,
+    SUM(total_amount) AS total_revenue,
+    AVG(total_amount) AS avg_fare
+FROM yellow_taxi_trips
+GROUP BY pickup_year, pickup_week, pickup_yearweek, passenger_count
+ORDER BY pickup_year, pickup_week, passenger_count;
+
+-- 1️⃣0️⃣ Revenue trend per payment type → "How NYC pays for taxi rides over time"
+CREATE OR REPLACE VIEW revenue_per_week_payment_type AS
+SELECT
+    YEAR(tpep_pickup_datetime) AS pickup_year,
+    WEEK(tpep_pickup_datetime, 3) AS pickup_week,
+    CONCAT(YEAR(tpep_pickup_datetime), '-W', LPAD(WEEK(tpep_pickup_datetime, 3), 2, '0')) AS pickup_yearweek,
+    payment_type,
+    COUNT(*) AS total_rides,
+    SUM(total_amount) AS total_revenue,
+    AVG(total_amount) AS avg_fare
+FROM yellow_taxi_trips
+GROUP BY pickup_year, pickup_week, pickup_yearweek, payment_type
+ORDER BY pickup_year, pickup_week, payment_type;
+
+-- 1️⃣1️⃣ Tip percentage trend → "How much do New Yorkers tip over time"
+CREATE OR REPLACE VIEW tip_percentage_per_week AS
+SELECT
+    YEAR(tpep_pickup_datetime) AS pickup_year,
+    WEEK(tpep_pickup_datetime, 3) AS pickup_week,
+    CONCAT(YEAR(tpep_pickup_datetime), '-W', LPAD(WEEK(tpep_pickup_datetime, 3), 2, '0')) AS pickup_yearweek,
+    AVG(CASE WHEN total_amount > 0 THEN tip_amount / total_amount ELSE 0 END) * 100 AS avg_tip_percentage
+FROM yellow_taxi_trips
+GROUP BY pickup_year, pickup_week, pickup_yearweek
+ORDER BY pickup_year, pickup_week;
+
+-- 1️⃣2️⃣ Trip distance buckets → per Heatmap o per Bar chart di lunghezze corse
+CREATE OR REPLACE VIEW trip_distance_buckets AS
+SELECT
+    CASE
+        WHEN trip_distance < 1 THEN '<1 mile'
+        WHEN trip_distance < 2 THEN '1-2 miles'
+        WHEN trip_distance < 5 THEN '2-5 miles'
+        WHEN trip_distance < 10 THEN '5-10 miles'
+        WHEN trip_distance < 20 THEN '10-20 miles'
+        ELSE '20+ miles'
+    END AS distance_bucket,
+    COUNT(*) AS total_rides,
+    SUM(total_amount) AS total_revenue,
+    AVG(total_amount) AS avg_fare
+FROM yellow_taxi_trips
+WHERE trip_distance > 0 AND total_amount > 0
+GROUP BY distance_bucket
+ORDER BY FIELD(distance_bucket, '<1 mile', '1-2 miles', '2-5 miles', '5-10 miles', '10-20 miles', '20+ miles');
