@@ -1,8 +1,11 @@
 # NYC Taxi MySQL Pipeline
 
-An ETL + EDA pipeline for NYC Yellow Taxi Trip Data 2024, with interactive Streamlit dashboard.
+An ETL + EDA pipeline for NYC Yellow Taxi Trip Data 2024, with interactive visualizations.
 
-🚀 **Interactive Dashboard available** — see [Dashboard Usage](#dashboard-usage) below to run it locally.
+🚀 **Interactive Tableau Dashboard available online** → [View the Tableau Dashboard here](https://github.com/martinaspeciale/nyc-taxi-mysql-pipeline/tree/main/dashboard/tableau-dashboard-site)  
+*(Interactive visualization built by combining multiple Tableau views and official NYC shapefiles — more dashboards to come!)*
+
+💻 **Local Streamlit Dashboard also available** — see [Dashboard Usage](#dashboard-usage) below to run it locally.
 
 🚕 Data Source: [NYC TLC Trip Records](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page)
 
@@ -14,26 +17,34 @@ An ETL + EDA pipeline for NYC Yellow Taxi Trip Data 2024, with interactive Strea
 - Perform advanced SQL queries and analysis.
 
 ## Project Structure
-
-- `data/` → Raw Parquet files + Taxi Zones shapefile (`data/taxi_zones/`)
-- `converted_csv/` → CSV converted files used for MySQL loading
-- `create_table.sql` → MySQL schema definition for `yellow_taxi_trips` table
-- `load_data.py` → ETL script to convert Parquet to CSV and load data into MySQL
-- `load_csv_infile.py` → Utility script to generate LOAD DATA INFILE statements for manual execution
-- `notebooks/` → Exploratory notebooks:
-    - `geospatial_analysis.ipynb` → Geospatial analysis of pickup zones
-    - `eda_yellow_taxi.ipynb` → Exploratory Data Analysis (EDA): trips per month, fare/tip trends, payment types
-    - `README.md` → Notebooks documentation + schema reference
-- `eda_views/` → Reusable SQL views used by both Tableau and Python EDA:
-    - `views.sql` → Definitions of the main EDA views on `yellow_taxi_trips`
-    - `README.md` → Usage instructions and purpose of views
-    - `run_views.sh` → Helper script to apply views using `.env` credentials
-- `eda_results/` → CSV files with EDA query results (used for dashboards and further analysis)
-- `dashboard/` → Streamlit dashboard application:
-    - `app.py` → Main dashboard app
-- `README.md` → Main project documentation (this file)
-- `requirements.txt` → Python project requirements
-
+```bash
+portfolio/nyc-taxi-mysql-pipeline/
+├── data/                             → Raw Parquet files + Taxi Zones shapefile
+│   └── taxi_zones/                   → NYC Taxi Zones shapefile
+├── converted_csv/                    → CSV converted files used for MySQL loading
+├── create_table.sql                  → MySQL schema definition for yellow_taxi_trips table
+├── load_data.py                      → ETL script to convert Parquet to CSV and load data into MySQL
+├── load_csv_infile.py                → Utility script to generate LOAD DATA INFILE statements for manual execution
+├── notebooks/                        → Exploratory notebooks
+│   ├── eda_yellow_taxi.ipynb         → Exploratory Data Analysis (EDA): rides per day/hour, fare trends, passenger count, revenue matrices
+│   ├── geospatial_analysis.ipynb     → Geospatial analysis of pickup zones
+│   ├── views.py                      → Script to export EDA views to CSV
+├── eda_views/                        → Reusable SQL views used by both Tableau and Python EDA
+│   ├── views.sql                     → Definitions of the main EDA views on yellow_taxi_trips
+│   ├── README.md                     → Usage instructions and purpose of views
+│   ├── run_views.sh                  → Helper script to apply views using .env credentials
+├── eda_results/                      → CSV files with EDA query results (used for dashboards and further analysis)
+│   └── exported_views/               → Exported CSVs for each EDA view
+├── dashboard/                        → 
+    └── tableau-dashboard-site/       → Tableau dashboard page
+        └── index.html
+│   ├── app.py                        → Streamlit dashboard application
+│   ├── README.md                     → Dashboard documentation
+├── requirements.txt                  → Python project requirements
+├── README.md                         → Main project documentation + schema reference
+├── .env                              → MySQL connection credentials (not committed to Git)
+└── .gitignore                        → Git ignore rules (should exclude .env, __pycache__, etc.)
+``` 
 
 ## Usage and Notes
 
