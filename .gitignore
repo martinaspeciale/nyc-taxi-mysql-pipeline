@@ -2,6 +2,7 @@
 /data/*
 !/data/.gitkeep
 converted_csv/
+converted_csv_september/
 
 # MySQL config parameters
 .env
