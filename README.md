@@ -15,7 +15,7 @@ An ETL + EDA pipeline for NYC Yellow Taxi Trip Data 2024, with interactive Strea
 
 ## Project Structure
 
-- `data/` → Raw Parquet files + Taxi Zones shapefile (data/taxi_zones/)
+- `data/` → Raw Parquet files + Taxi Zones shapefile (`data/taxi_zones/`)
 - `converted_csv/` → CSV converted files used for MySQL loading
 - `create_table.sql` → MySQL schema definition for `yellow_taxi_trips` table
 - `load_data.py` → ETL script to convert Parquet to CSV and load data into MySQL
@@ -24,6 +24,10 @@ An ETL + EDA pipeline for NYC Yellow Taxi Trip Data 2024, with interactive Strea
     - `geospatial_analysis.ipynb` → Geospatial analysis of pickup zones
     - `eda_yellow_taxi.ipynb` → Exploratory Data Analysis (EDA): trips per month, fare/tip trends, payment types
     - `README.md` → Notebooks documentation + schema reference
+- `eda_views/` → Reusable SQL views used by both Tableau and Python EDA:
+    - `views.sql` → Definitions of the main EDA views on `yellow_taxi_trips`
+    - `README.md` → Usage instructions and purpose of views
+    - `run_views.sh` → Helper script to apply views using `.env` credentials
 - `eda_results/` → CSV files with EDA query results (used for dashboards and further analysis)
 - `dashboard/` → Streamlit dashboard application:
     - `app.py` → Main dashboard app
