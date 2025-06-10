@@ -36,8 +36,8 @@ portfolio/nyc-taxi-mysql-pipeline/
 ├── eda_results/                      → CSV files with EDA query results (used for dashboards and further analysis)
 │   └── exported_views/               → Exported CSVs for each EDA view
 ├── dashboard/                        → 
-    └── tableau-dashboard-site/       → Tableau dashboard page
-        └── index.html
+|   └── tableau-dashboard-site/       → Tableau dashboard page
+|       └── index.html
 │   ├── app.py                        → Streamlit dashboard application
 │   ├── README.md                     → Dashboard documentation
 ├── requirements.txt                  → Python project requirements
@@ -125,22 +125,31 @@ SELECT COUNT(*) FROM yellow_taxi_trips;
 
 ## Current Dataset Status
 
-As of June 7, 2025:
-- Dataset loaded: NYC Yellow Taxi Trip Data (January 2024 → December 2024)
-- Total records in `yellow_taxi_trips` table: **41,169,720**
-- Full 12-month dataset processed via ETL pipeline:
-    - Parquet → CSV → MySQL (LOAD DATA INFILE)
-    - Batch processing verified
-    - Load time ~2h total for full dataset
-- Pipeline run manually using:
+As of June 9, 2025:
+
+### Full Year Table
+
+- **Dataset loaded:** NYC Yellow Taxi Trip Data (**January 2024 → December 2024**)
+- **Total records in `yellow_taxi_trips` table:** **41,169,720**
+- **Full 12-month dataset processed via ETL pipeline:**
+    - Parquet → CSV → MySQL (`LOAD DATA INFILE`)
+- **Pipeline run manually using:**
     - `python3 load_data.py --insert-method infile`
     - `LOAD DATA LOCAL INFILE` commands as printed by pipeline
 
+### One-Month Comparison Table (for September analysis)
+
+- **Dataset loaded:** NYC Yellow Taxi Trip Data — **September only** → for multi-year comparison
+- **Years included:** **2017 → 2024** 
+- **Table:** `yellow_taxi_trips_september_comparison`
+- **ETL pipeline:** `load_data_september_comparison.py`
+
 ### Total records in MySQL after load:
+                                                                  
+`SELECT COUNT(*) FROM yellow_taxi_trips;`                       → 41,169,664 rows 
+(updated after removing wrongful records from years other than 2024 — single-year analysis enforced)
 
-`SELECT COUNT(*) FROM yellow_taxi_trips;`
-
-→ 41,169,720 rows
+`SELECT COUNT(*) FROM yellow_taxi_trips_september_comparison;`  → 37,529,127 rows
 
 ### Load method:
 
