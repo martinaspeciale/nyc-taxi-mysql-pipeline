@@ -33,6 +33,22 @@ UPDATE yellow_taxi_trips_september_comparison
 SET source_year = YEAR(tpep_pickup_datetime)
 WHERE source_year IS NULL;
 ```
+### Use batch updates instead of a single full-table update
+
+Initially, we tried to update the `source_year` column for all rows in the `yellow_taxi_trips_september_comparison` table with a single large query (as shown above).
+However, this caused the database server to crash or become unresponsive due to the large size of the table (millions of rows). Performing the full update in one operation required too much memory and caused long-running locks on the table, which is not suitable for production environments.
+
+To address this, we switched to a batch update strategy:
+```sql
+UPDATE yellow_taxi_trips_september_comparison
+SET source_year = YEAR(tpep_pickup_datetime)
+WHERE source_year IS NULL
+  AND YEAR(tpep_pickup_datetime) IS NOT NULL
+  AND (source_year <> YEAR(tpep_pickup_datetime) OR source_year IS NULL)
+LIMIT 10000;
+```
+
+---
 
 The following EDA views can also be used with the `yellow_taxi_trips_september_comparison` table to support **multi-year September analysis**:
 
