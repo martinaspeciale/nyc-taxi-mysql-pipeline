@@ -22,6 +22,18 @@ chmod +x run_views.sh     # make script executable (only needed once)
 
 ### EDA Views — One-Month Comparison Support
 
+####  Note: Maintaining source_year column
+
+The `yellow_taxi_trips_september_comparison` table includes a `source_year` column to support multi-year analysis.
+
+If data is loaded manually (inline INSERTs or LOAD DATA INFILE) without including the `source_year`, run the following command to populate it:
+
+```sql
+UPDATE yellow_taxi_trips_september_comparison
+SET source_year = YEAR(tpep_pickup_datetime)
+WHERE source_year IS NULL;
+```
+
 The following EDA views can also be used with the `yellow_taxi_trips_september_comparison` table to support **multi-year September analysis**:
 
 - `rides_per_day`
