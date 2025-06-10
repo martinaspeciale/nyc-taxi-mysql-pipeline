@@ -182,31 +182,39 @@ streamlit run app.py
 
 The pipeline currently supports full ETL of the NYC Yellow Taxi data into MySQL.
 
+Current achievements:
+
+- ✅ Full year 2024 dataset loaded (41M rows) — single-year clean analysis
+- ✅ Multi-year September comparison table created (2017 → 2024, 37M+ rows)
+- ✅ ETL pipelines: `load_data.py` + `load_data_september_comparison.py`
+- ✅ EDA views implemented and tested
+- ✅ Initial Tableau dashboards created (full year and September comparison)
+
 Planned next steps:
 
-- [ ] 1️⃣ Exploratory data analysis (EDA)
-    - Total trips per month
-    - Average fare and tip analysis
-    - Payment types trends
+- [ ] 1️⃣ Exploratory data analysis (EDA) — **expand and refine**
+    - Total trips per month → already done for 2024, expand to multi-year where relevant
+    - Average fare and tip analysis → started, refine for September comparison
+    - Payment types trends → partially done, expand to more advanced visualizations
 
-- [ ] 2️⃣ Geospatial analysis 🌍
-    - Top pickup and dropoff locations
-    - Visualize trip density on a map
-    - Temporal trends in pickup locations
+- [ ] 2️⃣ Geospatial analysis 🌍 — **already started**, further refine
+    - ✅ Top pickup and dropoff locations → map visualization done
+    - ✅ Visualize trip density on a map → initial map created
+    - [ ] Temporal trends in pickup locations → next step
 
 - [ ] 3️⃣ Time series analysis
-    - Hourly / daily activity patterns
-    - Trends in trip distances and fares
+    - ✅ Hourly / daily activity patterns → implemented
+    - [ ] Trends in trip distances and fares → to add
 
 - [ ] 4️⃣ Fares and tips deep dive
-    - Average tip by payment type
-    - Correlation between trip distance and tips
+    - [ ] Average tip by payment type → to build in Tableau
+    - [ ] Correlation between trip distance and tips → view ready, visualization pending
 
 - [ ] 5️⃣ Outlier and data quality analysis
-    - Detect anomalous trips (zero distance with high fare, extreme durations)
+    - [ ] Detect anomalous trips (zero distance with high fare, extreme durations) → to implement
 
-- [ ] 6️⃣ Build a small interactive dashboard 
-    - Streamlit app or Jupyter notebook with charts and maps
-
-
+- [ ] 6️⃣ Build an interactive dashboard
+    - ✅ Initial Tableau dashboards published (full year and September comparison)
+    - [ ] Expand Tableau dashboard with **advanced visual storytelling** (race charts, grids, heatmaps)
+    - [ ] Optional: Streamlit app or Jupyter notebook with charts and maps (TBD)
 
