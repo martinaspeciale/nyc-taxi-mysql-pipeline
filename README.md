@@ -2,8 +2,19 @@
 
 An ETL + EDA pipeline for NYC Yellow Taxi Trip Data 2024, with interactive visualizations.
 
-🚀 **Interactive Tableau Dashboard available online** → [View the Tableau Dashboard here](https://github.com/martinaspeciale/nyc-taxi-mysql-pipeline/tree/main/dashboard/tableau-dashboard-site)  
-*(Interactive visualization built by combining multiple Tableau views and official NYC shapefiles — more dashboards to come!)*
+## 🚕 NYC Taxi Dashboard — Live Demo
+
+An interactive dashboard built with **Tableau**, visualizing insights from the NYC Yellow Taxi trip dataset.
+
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-NYC%20Taxi%20Dashboard-brightgreen?style=for-the-badge&logo=tableau&logoColor=white)](https://martinaspeciale.github.io/nyc-taxi-mysql-pipeline/nyc_taxi_dashboard.html)
+
+👉 **[View the live dashboard here](https://martinaspeciale.github.io/nyc-taxi-mysql-pipeline/nyc_taxi_dashboard.html)**
+
+### Built with
+
+- [Tableau](https://www.tableau.com/)
+- [GitHub Pages](https://pages.github.com/) for deployment
+
 
 💻 **Local Streamlit Dashboard also available** — see [Dashboard Usage](#dashboard-usage) below to run it locally.
 
